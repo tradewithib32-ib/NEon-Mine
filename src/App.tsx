@@ -3,9 +3,88 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState } from 'react';
+import { AdminPanel } from './components/AdminPanel';
+
 export default function App() {
+  const [isCloudMiningModalOpen, setIsCloudMiningModalOpen] = useState(false);
+  const [activeModalView, setActiveModalView] = useState<'default' | 'newcomerTG'>('default');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminNumber, setAdminNumber] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
+  const handleAdminLogin = () => {
+    if (adminNumber === '01400168914' && adminPassword === 'Abcd@1234') {
+      setIsAdminLoggedIn(true);
+      setIsAdminLoginModalOpen(false);
+    } else {
+      alert('Invalid Credentials');
+    }
+  };
+
+  if (isAdminLoggedIn) {
+    return <AdminPanel onLogout={() => setIsAdminLoggedIn(false)} />;
+  }
+
   return (
     <div className="flex flex-col h-screen w-full bg-[#050508] text-slate-300 overflow-hidden font-sans">
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-[#0a0a12] border border-white/10 rounded-2xl p-6 w-[400px] shadow-2xl">
+            <h2 className="text-xl font-bold text-white mb-4">{authView === 'login' ? 'User Login' : 'User Sign Up'}</h2>
+            {authView === 'signup' && <input type="text" placeholder="Name" className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-2 outline-none focus:border-cyan-500/50" />}
+            <input type="text" placeholder="Number" className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-2 outline-none focus:border-cyan-500/50" />
+            <input type="password" placeholder="Password" className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-4 outline-none focus:border-cyan-500/50" />
+            <button className="w-full py-2 bg-cyan-500 rounded-lg text-white text-sm font-semibold hover:bg-cyan-400">{authView === 'login' ? 'Login' : 'Sign Up'}</button>
+            <p className="mt-4 text-xs text-center text-slate-500">
+              {authView === 'login' ? "Don't have an account? " : "Already have an account? "}
+              <button onClick={() => setAuthView(authView === 'login' ? 'signup' : 'login')} className="text-cyan-400 hover:underline">{authView === 'login' ? 'Sign Up' : 'Login'}</button>
+            </p>
+            <button onClick={() => setIsAuthModalOpen(false)} className="w-full mt-4 text-xs text-slate-500">Close</button>
+          </div>
+        </div>
+      )}
+
+      {isAdminLoginModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-[#0a0a12] border border-white/10 rounded-2xl p-6 w-[400px] shadow-2xl">
+            <h2 className="text-xl font-bold text-white mb-4">Admin Login</h2>
+            <input type="text" placeholder="Number" value={adminNumber} onChange={(e) => setAdminNumber(e.target.value)} className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-2 outline-none focus:border-cyan-500/50" />
+            <input type="password" placeholder="Password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-4 outline-none focus:border-cyan-500/50" />
+            <button onClick={handleAdminLogin} className="w-full py-2 bg-cyan-500 rounded-lg text-white text-sm font-semibold hover:bg-cyan-400">Login</button>
+            <button onClick={() => setIsAdminLoginModalOpen(false)} className="w-full mt-4 text-xs text-slate-500">Close</button>
+          </div>
+        </div>
+      )}
+
+      {isCloudMiningModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-[#0a0a12] border border-white/10 rounded-2xl p-6 w-[400px] shadow-2xl">
+            {activeModalView === 'default' && (
+              <>
+                <h2 className="text-xl font-bold text-white mb-4">Cloud Mining Options</h2>
+                <button className="w-full py-3 bg-white/5 border border-white/10 rounded-lg text-white mb-2 hover:bg-white/10">Add your mining pool</button>
+                <button onClick={() => setActiveModalView('newcomerTG')} className="w-full py-3 bg-cyan-500/10 border border-cyan-500/50 rounded-lg text-cyan-400 hover:bg-cyan-500/20">Newcomer TG</button>
+                <button onClick={() => setIsCloudMiningModalOpen(false)} className="w-full mt-4 text-xs text-slate-500">Close</button>
+              </>
+            )}
+            {activeModalView === 'newcomerTG' && (
+              <>
+                <h2 className="text-xl font-bold text-white mb-4">Newcomer TG Authentication</h2>
+                <input type="text" placeholder="Number" className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-2 outline-none focus:border-cyan-500/50" />
+                <button className="w-full py-2 bg-indigo-500 rounded-lg text-white mb-2 text-sm">Send Authenticator</button>
+                <input type="text" placeholder="Type here" className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-sm mb-2 outline-none focus:border-cyan-500/50" />
+                <button className="w-full py-2 bg-emerald-500 rounded-lg text-white text-sm">Submit</button>
+                <button onClick={() => setIsCloudMiningModalOpen(false)} className="w-full mt-4 text-xs text-slate-500">Close</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Top Navigation Bar */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0a12]/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
@@ -19,9 +98,11 @@ export default function App() {
         </div>
         <nav className="flex gap-8 text-sm font-medium">
           <a href="#" className="text-cyan-400 border-b-2 border-cyan-400 pb-1">Dashboard</a>
-          <a href="#" className="hover:text-white transition-colors">Cloud Mining</a>
+          <button onClick={() => { setIsCloudMiningModalOpen(true); setActiveModalView('default'); }} className="hover:text-white transition-colors">Cloud Mining</button>
           <a href="#" className="hover:text-white transition-colors">Wallet</a>
           <a href="#" className="hover:text-white transition-colors">Referral</a>
+          <button onClick={() => setIsAdminLoginModalOpen(true)} className="text-white hover:text-cyan-400 transition-colors">Admin Login</button>
+          <button onClick={() => { setIsAuthModalOpen(true); setAuthView('login'); }} className="text-white hover:text-cyan-400 transition-colors">User Login</button>
         </nav>
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-end">
@@ -29,6 +110,7 @@ export default function App() {
             <span className="flex items-center gap-1 text-[10px] text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> 2FA Secured
             </span>
+            <button className="text-[10px] text-red-500 hover:text-red-400 font-semibold underline mt-0.5">Logout</button>
           </div>
           <div className="w-10 h-10 rounded-full border-2 border-white/10 bg-slate-800"></div>
         </div>
@@ -43,18 +125,6 @@ export default function App() {
               <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 text-[10px] rounded">Active</span>
             </div>
             <div className="flex-1 overflow-hidden space-y-3 text-[11px]">
-              <div className="bg-white/5 p-2 rounded-lg border-l-2 border-cyan-500">
-                <p className="text-slate-400 font-semibold">System</p>
-                <p>Withdrawal request #842 approved.</p>
-              </div>
-              <div className="bg-white/5 p-2 rounded-lg">
-                <p className="text-slate-400 font-semibold">Sarah L.</p>
-                <p>How do I upgrade to the Diamond plan?</p>
-              </div>
-              <div className="bg-white/5 p-2 rounded-lg">
-                <p className="text-slate-400 font-semibold">Support Bot</p>
-                <p>Welcome! We are online 24/7.</p>
-              </div>
             </div>
             <div className="mt-4 pt-4 border-t border-white/5">
               <input type="text" placeholder="Type a message..." className="w-full bg-[#050508] border border-white/10 rounded-lg py-2 px-3 text-xs outline-none focus:border-cyan-500/50 transition-colors" />
@@ -79,19 +149,19 @@ export default function App() {
           <div className="grid grid-cols-4 gap-4">
             <div className="bg-[#0a0a12] border border-white/5 p-4 rounded-2xl">
               <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Active Hashrate</p>
-              <h4 className="text-2xl font-bold text-white">142.5 <span className="text-cyan-400 text-sm">TH/s</span></h4>
+              <h4 className="text-2xl font-bold text-white">00 <span className="text-cyan-400 text-sm">TH/s</span></h4>
               <div className="mt-2 h-1 w-full bg-white/5 rounded-full overflow-hidden">
                 <div className="bg-cyan-500 h-full w-3/4 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
               </div>
             </div>
             <div className="bg-[#0a0a12] border border-white/5 p-4 rounded-2xl">
               <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Total Balance</p>
-              <h4 className="text-2xl font-bold text-white">0.4829 <span className="text-amber-400 text-sm">BTC</span></h4>
+              <h4 className="text-2xl font-bold text-white">00 <span className="text-amber-400 text-sm">BTC</span></h4>
               <p className="text-[10px] text-emerald-400 mt-1">≈ $21,492.50 USD</p>
             </div>
             <div className="bg-[#0a0a12] border border-white/5 p-4 rounded-2xl">
               <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Active Workers</p>
-              <h4 className="text-2xl font-bold text-white uppercase">12 <span className="text-emerald-400 text-xs">Online</span></h4>
+              <h4 className="text-2xl font-bold text-white uppercase">00 <span className="text-emerald-400 text-xs">Online</span></h4>
               <p className="text-[10px] text-slate-600 mt-1">Next block in 4m 12s</p>
             </div>
             <div className="bg-cyan-500 border border-cyan-400 p-4 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.2)] group cursor-pointer">
@@ -146,18 +216,6 @@ export default function App() {
                 </tr>
               </thead>
               <tbody className="text-slate-400 divide-y divide-white/5">
-                <tr>
-                  <td className="py-2">Mining Payout</td>
-                  <td className="py-2 font-mono">3J98t1WpEx...u7r</td>
-                  <td className="py-2 text-white">+0.0024 BTC</td>
-                  <td className="py-2 text-right text-emerald-400">Completed</td>
-                </tr>
-                <tr>
-                  <td className="py-2">Withdrawal</td>
-                  <td className="py-2 font-mono">1BvBMSEYst...fP2</td>
-                  <td className="py-2 text-white">-0.0500 BTC</td>
-                  <td className="py-2 text-right text-amber-400">Pending...</td>
-                </tr>
               </tbody>
             </table>
           </div>
